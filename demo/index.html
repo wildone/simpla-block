@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>simpla-block</title>
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script>
+      window.Polymer = window.Polymer || {};
+      window.Polymer.dom = 'shadow';
+    </script>
+    <link rel="import" href="../simpla-block.html" />
+  </head>
+  <body>
+    <!-- Define mock child -->
+    <dom-module id="namespace-child">
+      <template>
+        <p>SID: [[sid]]</p>
+        <p>UID: [[uid]]</p>
+      </template>
+      <script>
+        Polymer({
+          is: 'namespace-child',
+          behaviors: [ simpla.behaviors.blockNamespaceChild ]
+        });
+      </script>
+    </dom-module>
+    <simpla-block sid="foo">
+      <namespace-child sid="bar"></namespace-child>
+
+      <simpla-block sid="baz">
+        <namespace-child sid="qux"></namespace-child>
+        <namespace-child sid="bar"></namespace-child>
+      </simpla-block>
+
+      <!-- Check for escaping of special characters -->
+      <simpla-block sid="baz.com">
+        <namespace-child sid="qux"></namespace-child>
+      </simpla-block>
+    </simpla-block>
+  </body>
+</html>
