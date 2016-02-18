@@ -15,6 +15,12 @@
     <script>
       Polymer({
         is: 'mock-namespace-child',
+        properties: {
+          uid: {
+            type: String,
+            value: ''
+          }
+        },
         behaviors: [ simpla.behaviors.blockNamespaceChild ]
       });
     </script>
