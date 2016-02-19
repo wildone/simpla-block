@@ -94,12 +94,12 @@ class SmBlockNamespace {
     let currentNode,
         walker = document.createTreeWalker(block, NodeFilter.SHOW_ELEMENT, {
           acceptNode(node) {
-            if (node._smNamespace) {
-              return NodeFilter.FILTER_REJECT;
+            if (node.joinNamespace && !node.namespace) {
+              return NodeFilter.FILTER_ACCEPT;
             }
 
-            if (node.joinNamespace) {
-              return NodeFilter.FILTER_ACCEPT;
+            if (node._smNamespace) {
+              return NodeFilter.FILTER_REJECT;
             }
 
             return NodeFilter.FILTER_SKIP;
