@@ -1,7 +1,7 @@
-# simpla block
+# Simpla Block
 ![][bower-badge] [![][travis-badge]][travis-url] [![][bowerdeps-badge]][bowerdeps-url] [![][npmdevdeps-badge]][npmdevdeps-url]
 
-Semantic namespace for simpla elements
+Namespacing element for Simpla
 
 --
 

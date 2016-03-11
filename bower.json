@@ -1,6 +1,6 @@
 {
   "name": "simpla-block",
-  "description": "Semantic namespace for simpla elements",
+  "description": "Namespacing element for Simpla",
   "version": "0.0.0",
   "authors": [
     "Simpla <admin@simpla.io>"
@@ -27,9 +27,5 @@
   "devDependencies": {
     "web-component-tester": "^3.3.0",
     "test-fixture": "PolymerElements/test-fixture"
-  },
-  "componentImports": [
-    "polymer/polymer.html",
-    "simpla-core/simpla-core.html"
-  ]
+  }
 }

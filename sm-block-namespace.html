@@ -1,0 +1,133 @@
+<link rel="import" href="../polymer/polymer.html"> <link rel="import" href="../../simpla-core/simpla-core.html"> <script>// Don't override
+window.simpla = window.simpla || {};
+window.simpla.behaviors = window.simpla.behaviors || {};
+
+/**
+ * A behavior for elements that can live in namespaces.
+ *
+ * It expects you to already have a property named UID:
+ *
+ *  This is the unique id, and is scoped to the project. It will be based on
+ *  	on the namespace ancestry, and the current sid. It's is merely the path from
+ *    this element all the way back to the root ns, passing through each namespace.
+ *
+ * 	In the example below, the base url and therefore root ns is http://foobar.com,
+ *   the second and third namespaces are bar and baz respectively. This pid is qux
+ *   Example: 'http://foobar\.com.bar.baz.qux'
+ *
+ * 	More simply, it is `${namespace.uid}.${this.sid}`
+ *
+ * 	Note: It is updated via observers and event handlers, as it needs to be
+ *  	manually mutated by internal methods, it's not computed
+ *
+ *
+ * @type {Object}
+ */
+const blockNamespaceChild = {
+  properties: {
+    /**
+     * This is the simpla id of the element. This is scoped to the namespace and
+     *  should be created by the user. It must be unique to the namespace.
+     * @type {String}
+     */
+    sid: {
+      type: String,
+      value: ''
+    },
+
+    /**
+     * The current namespace it's attached to
+     * @type {HTMLElement}
+     */
+    namespace: {
+      value: null,
+      observer: 'joinNamespace'
+    }
+  },
+
+  observers: [
+    '_updateUid(namespace, sid)'
+  ],
+
+  attached() {
+    this.updateNamespace();
+  },
+
+  /**
+   * Observer for namespace. Adds itself onto the given namespace, i.e. add itself as an element to that
+   * 	namespace, and removes itself from the previous namespace
+   * @param {HTMLElement} namespace           Namespace to join
+   * @param {HTMLElement} previousNamespace   Previous namespace to remove itself from
+   * @return {undefined}
+   */
+  joinNamespace(namespace, previousNamespace) {
+
+    // Store a bound listener, otherwise we wouldn't be able to remove the listener
+    //  and / or give it a contextual listener
+    if (!this._namespaceListener) {
+      this._namespaceListener = (event) => {
+        let uid = event.detail.value;
+        this._changeUid(this._computeUid(uid, this.sid));
+      }
+    }
+
+    if (namespace) {
+      namespace.addElement(this);
+      namespace.addEventListener('uid-changed', this._namespaceListener);
+    }
+
+    if (previousNamespace) {
+      previousNamespace.removeElement(this);
+      previousNamespace.removeEventListener('uid-changed', this._namespaceListener);
+    }
+  },
+
+  /**
+   * Helper function to set a uid, whether it's read only or not
+   * @param  {String} uid UID to set this.uid to
+   * @return {undefined}
+   */
+  _changeUid(uid) {
+    if (this._setUid) {
+      this._setUid(uid);
+    } else {
+      this.uid = uid;
+    }
+  },
+
+  /**
+   * Computed function for uid. Returns / sets it to a string of the form:
+   * 	`${namespace.uid}.${this.sid}`
+   * @param {String} base      Base portion of UID, usually namespaces uid
+   * @param {String} sid       Current sid to append to base
+   * @return {String}          Returns UID string
+   */
+  _computeUid(base, sid) {
+    let escaped = sid.replace('.', '\\.');
+    return base ? `${base}.${escaped}` : escaped;
+  },
+
+  _updateUid(namespace, sid) {
+    let base = namespace ? namespace.uid : '',
+        uid = this._computeUid(base, sid);
+
+    this._changeUid(uid);
+  },
+
+  /**
+   * Find the nearest parent namespace / block and attach itself to it
+   * @return {HTMLElement} Closest parent namespace
+   */
+  updateNamespace() {
+    let element = this,
+        found = false;
+
+    while (!found && (element = element.parentElement)) {
+      found = !!element._smNamespace;
+    }
+
+    this.namespace = element && found ? element._smNamespace : null;
+  }
+};
+
+window.simpla.behaviors.blockNamespaceChild = blockNamespaceChild;</script><dom-module id="sm-block-namespace"> <script>!function(){"use strict";var e={};e.classCallCheck=function(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")},e.createClass=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}();var t=function(){function t(){e.classCallCheck(this,t)}return e.createClass(t,[{key:"beforeRegister",value:function(){this.is="sm-block-namespace",this.properties={block:{value:null,observer:"_blockObserver"},elements:{type:Array,value:[]},uid:{type:String,value:"",notify:!0}},this.observers=["refreshElements(block)"]}},{key:"addElement",value:function(e){this.push("elements",e)}},{key:"removeElement",value:function(e){var t=this.elements.indexOf(e);-1!==t&&this.splice("elements",t,1)}},{key:"_blockObserver",value:function(e,t){e&&(e._smNamespace=this),t&&t._smNamespace===this&&delete t._smNamespace}},{key:"refreshElements",value:function(e){if(e)for(var t=void 0,n=document.createTreeWalker(e,NodeFilter.SHOW_ELEMENT,{acceptNode:function(e){return e.joinNamespace&&!e.namespace?NodeFilter.FILTER_ACCEPT:e._smNamespace?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_SKIP}});n.nextNode()&&(t=n.currentNode);)t.namespace=this}}]),t}();Polymer(t)}();</script></dom-module>
