@@ -16,7 +16,7 @@
   "ignore": [
     "*",
     "!src/**/*",
-    "!simpla-block.html",
+    "!*.html",
     "!LICENSE"
   ],
   "dependencies": {
