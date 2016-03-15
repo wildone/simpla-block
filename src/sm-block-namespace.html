@@ -1,0 +1,123 @@
+<link rel="import" href="../polymer/polymer.html"/>
+<link rel="import" href="../../simpla-core/simpla-core.html" />
+
+<dom-module id="sm-block-namespace">
+  <script>
+    class SmBlockNamespace {
+      beforeRegister() {
+        this.is = 'sm-block-namespace';
+
+        this.properties = {
+          /**
+           * The element that physically contains all of the elements
+           * @type {HTMLElement}
+           */
+          block: {
+            value: null,
+            observer: '_blockObserver'
+          },
+
+          /**
+           * Collection of child elements in the block, each consists of an element and the
+           *  path to that element
+           * @type {Array}
+           */
+          elements: {
+            type: Array,
+            value: []
+          },
+
+          /**
+           * UID which represents the ID of the current namespace
+           * @type {String}
+           */
+          uid: {
+            type: String,
+            value: '',
+            notify: true
+          }
+        };
+
+        this.observers = [
+          'refreshElements(block)'
+        ];
+      }
+
+      /**
+       * Add child element to namespace
+       * @param {HTMLElement} element Element to add
+       * @return {undefined}
+       */
+      addElement(element) {
+        this.push('elements', element);
+      }
+
+      /**
+       * Remove child element from namespace
+       * @param  {HTMLElement} element Element to remove
+       * @return {undefined}
+       */
+      removeElement(element) {
+        let index = this.elements.indexOf(element);
+
+        if (index !== -1) {
+          this.splice('elements', index, 1);
+        }
+      }
+
+      /**
+       * Observer for block property. This will release all the current children and
+       *  then tell every globally orphaned child to find their closest parent, thus
+       * reassigning children to the appropriate namespace on every block change.
+       * @param  {HTMLElement} block          Current block
+       * @param  {HTMLElement} previousBlock  Previous block
+       * @return {undefined}
+       */
+      _blockObserver(block, previousBlock) {
+
+        if (block) {
+          block._smNamespace = this;
+        }
+
+        if (previousBlock && previousBlock._smNamespace === this) {
+          delete previousBlock._smNamespace;
+        }
+
+      }
+
+      /**
+       * Observer of block. Find all potential children of current block and set
+       * 	their namespace to this
+       * @param {HTMLElement} block The block element to go through
+       * @return {undefined}
+       */
+      refreshElements(block) {
+        if (!block) {
+          return;
+        }
+
+        let currentNode,
+            walker = document.createTreeWalker(block, NodeFilter.SHOW_ELEMENT, {
+              acceptNode(node) {
+                if (node.joinNamespace && !node.namespace) {
+                  return NodeFilter.FILTER_ACCEPT;
+                }
+
+                if (node._smNamespace) {
+                  return NodeFilter.FILTER_REJECT;
+                }
+
+                return NodeFilter.FILTER_SKIP;
+              }
+            });
+
+        // Note that nextNode is called immediately so that the root is skipped over
+        while (walker.nextNode() && (currentNode = walker.currentNode)) {
+          currentNode.namespace = this;
+        }
+      }
+    }
+
+    Polymer(SmBlockNamespace);
+  </script>
+</dom-module>

@@ -1,0 +1,47 @@
+<link rel="import" href="../polymer/polymer.html"/>
+<link rel="import" href="../../simpla-core/simpla-core.html" />
+<link rel="import" href="./sm-block-namespace.html"/>
+<link rel="import" href="./sm-block-namespace-child.html"/>
+
+<dom-module id="simpla-block">
+  <template>
+    <style include="sm-css-base"></style>
+    <sm-block-namespace
+      uid="[[uid]]"
+      block="[[self]]"
+    ></sm-block-namespace>
+    <content></content>
+  </template>
+  <script>
+    class SimplaBlock {
+      beforeRegister() {
+        this.is = 'simpla-block';
+
+        this.properties = {
+          /**
+           * Value of self to decleratively pass to namespace
+           * @type {HTMLElement}
+           */
+          self: {
+            value: null
+          }
+        }
+      }
+
+      /**
+       * Behaviors
+       * @type {array}
+       */
+      get behaviors() {
+        // Namespaces can be nested inside namespaces, thus should have SmNamespaceChild behavior
+        return [ simpla.behaviors.blockNamespaceChild ]
+      }
+
+      ready() {
+        this.self = this;
+      }
+    }
+
+    Polymer(SimplaBlock);
+  </script>
+</dom-module>
