@@ -1,3 +1,4 @@
+<link rel="import" href="./sm-block-namespace-global.html" />
 <script>
   // Don't override
   window.simpla = window.simpla || {};
@@ -47,7 +48,7 @@
     },
 
     observers: [
-      '_updateUid(namespace, sid)'
+      '_updateUid(namespace, sid, global)'
     ],
 
     attached() {
@@ -68,7 +69,11 @@
       if (!this._namespaceListener) {
         this._namespaceListener = (event) => {
           let uid = event.detail.value;
-          this._changeUid(this._computeUid(uid, this.sid));
+          if (!uid) {
+            this._changeUid(undefined);
+          } else {
+            this._changeUid(this._computeUid(uid, this.sid));
+          }
         }
       }
 
@@ -108,11 +113,22 @@
       return base ? `${base}.${escaped}` : escaped;
     },
 
-    _updateUid(namespace, sid) {
-      let base = namespace ? namespace.uid : '',
-          uid = this._computeUid(base, sid);
+    _updateUid(namespace, sid, isGlobal) {
+      if (!(namespace && namespace.uid) && !isGlobal) {
+        this._changeUid(undefined);
+      } else {
+        let base,
+            uid;
 
-      this._changeUid(uid);
+        if (isGlobal) {
+          base = undefined;
+        } else {
+          base = namespace ? namespace.uid : '';
+        }
+
+        uid = this._computeUid(base, sid);
+        this._changeUid(uid);
+      }
     },
 
     /**
@@ -131,5 +147,5 @@
     }
   };
 
-  window.simpla.behaviors.blockNamespaceChild = blockNamespaceChild;
+  window.simpla.behaviors.blockNamespaceChild = [ blockNamespaceChild, window.simpla.behaviors.blockNamespaceGlobal ];
 </script>
