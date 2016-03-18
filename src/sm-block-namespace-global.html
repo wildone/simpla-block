@@ -1,0 +1,24 @@
+<script>
+  // Don't override
+  window.simpla = window.simpla || {};
+  window.simpla.behaviors = window.simpla.behaviors || {};
+
+  /**
+   * A behavior for elements to make their data global
+   *
+   * TODO: Right now, this just exposes the global property, in the future it
+   * 	should add proper functionality i.e. stop pulling concatting uids from
+   * 	parents to own sid
+   * @type {Object}
+   */
+  const blockNamespaceGlobal = {
+    properties: {
+      global: {
+        type: Boolean,
+        value: false
+      }
+    }
+  };
+
+  window.simpla.behaviors.blockNamespaceGlobal = blockNamespaceGlobal;
+</script>
