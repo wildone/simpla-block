@@ -1,5 +1,6 @@
 <link rel="import" href="../polymer/polymer.html"/>
-<link rel="import" href="../../simpla-core/simpla-core.html" />
+<link rel="import" href="../simpla-core/simpla-core.html" />
+<link rel="import" href="./sm-block-namespace-global.html" />
 
 <dom-module id="sm-block-namespace">
   <script>
@@ -41,6 +42,19 @@
         this.observers = [
           'refreshElements(block)'
         ];
+      }
+
+      /**
+       * Behavior with getters / setters workaround for Polymer ES6 behaviors.
+       * 	See https://github.com/Polymer/polymer/issues/2451
+       * @type {Array}
+       */
+      get behaviors() {
+        return this._behaviors || (this._behaviors = [ simpla.behaviors.blockNamespaceGlobal ]);
+      }
+
+      set behaviors(value) {
+        this._behaviors = value;
       }
 
       /**
@@ -98,7 +112,14 @@
 
         let currentNode,
             walker = document.createTreeWalker(block, NodeFilter.SHOW_ELEMENT, {
-              acceptNode(node) {
+              acceptNode: (node) => {
+                // Children of nodes that have been accepted should be ignored,
+                //  i.e. we're assuming that they're namespaces too OR they have
+                //  no children that need to have a namespace e.g. simpla-text
+                if (node.parentElement && node.parentElement.namespace === this) {
+                  return NodeFilter.FILTER_REJECT;
+                }
+
                 if (node.joinNamespace && !node.namespace) {
                   return NodeFilter.FILTER_ACCEPT;
                 }
