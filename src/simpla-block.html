@@ -1,5 +1,5 @@
 <link rel="import" href="../polymer/polymer.html"/>
-<link rel="import" href="../../simpla-core/simpla-core.html" />
+<link rel="import" href="../simpla-core/simpla-core.html" />
 <link rel="import" href="./sm-block-namespace.html"/>
 <link rel="import" href="./sm-block-namespace-child.html"/>
 
@@ -9,6 +9,7 @@
     <sm-block-namespace
       uid="[[uid]]"
       block="[[self]]"
+      global="[[global]]"
     ></sm-block-namespace>
     <content></content>
   </template>
@@ -29,12 +30,17 @@
       }
 
       /**
-       * Behaviors
-       * @type {array}
+       * Behavior with getters / setters workaround for Polymer ES6 behaviors.
+       * 	See https://github.com/Polymer/polymer/issues/2451
+       * @type {Array}
        */
       get behaviors() {
         // Namespaces can be nested inside namespaces, thus should have SmNamespaceChild behavior
-        return [ simpla.behaviors.blockNamespaceChild ]
+        return this._behaviors || (this._behaviors = [ simpla.behaviors.blockNamespaceChild ]);
+      }
+
+      set behaviors(value) {
+        this._behaviors = value;
       }
 
       ready() {
