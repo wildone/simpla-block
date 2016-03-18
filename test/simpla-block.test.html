@@ -28,7 +28,7 @@
   <body>
     <test-fixture id="default">
       <template>
-        <simpla-block sid="foo">
+        <simpla-block sid="foo" global>
           <mock-namespace-child sid="bar" data-expected-uid="foo.bar"></mock-namespace-child>
 
           <simpla-block sid="baz">
@@ -40,13 +40,19 @@
           <simpla-block sid="baz.com">
             <mock-namespace-child sid="qux" data-expected-uid="foo.baz\.com.qux"></mock-namespace-child>
           </simpla-block>
+
+          <!-- Test Global Property -->
+          <simpla-block sid="baz" global>
+            <mock-namespace-child sid="qux" data-expected-uid="baz.qux"></mock-namespace-child>
+            <mock-namespace-child sid="bar" global data-expected-uid="bar"></mock-namespace-child>
+          </simpla-block>
         </simpla-block>
       </template>
     </test-fixture>
 
     <test-fixture id="dynamic-uid">
       <template>
-        <simpla-block sid="foo">
+        <simpla-block sid="foo" global>
           <mock-namespace-child sid="bar"></mock-namespace-child>
           <simpla-block sid="baz">
             <mock-namespace-child sid="qux"></mock-namespace-child>
@@ -58,11 +64,25 @@
     <test-fixture id="dynamic-block">
       <template>
         <div>
-          <mock-namespace-child sid="bar"></mock-namespace-child>
-          <simpla-block sid="baz">
+          <mock-namespace-child sid="bar" global></mock-namespace-child>
+          <simpla-block sid="baz" global>
             <mock-namespace-child sid="qux"></mock-namespace-child>
           </simpla-block>
         </div>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="namespace-child">
+      <template>
+        <mock-namespace-child></mock-namespace-child>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="parent-child">
+      <template>
+        <simpla-block sid="foo">
+          <mock-namespace-child sid="bar"></mock-namespace-child>
+        </simpla-block>
       </template>
     </test-fixture>
     <script>
@@ -106,6 +126,45 @@
             namespace.uid = 'bar';
             expect(root.querySelector('[sid="bar"]').uid).to.equal('bar.bar');
             expect(root.querySelector('[sid="qux"]').uid).to.equal('bar.baz.qux');
+          });
+        });
+
+        describe('setting UID only once complete / global', function() {
+          it('shouldnt set the a UID if its not global and its parent\'s UID isnt complete', function() {
+            var child = fixture('namespace-child');
+
+            child.sid = 'foo';
+            expect(child.uid).to.not.be.ok;
+          });
+
+          describe('global', function() {
+            it('should set the uid if its global', function() {
+              var child = fixture('namespace-child');
+
+              child.sid = 'bar';
+              child.global = true;
+
+              expect(child.uid).to.equal('bar');
+            });
+          });
+
+          describe('checking for uidIsComplete', function() {
+            var parent,
+                child;
+
+            beforeEach(function() {
+              parent = fixture('parent-child');
+              child = parent.querySelector('mock-namespace-child');
+            });
+
+            it('shouldnt update its uid when parent changes, if parent UID isnt complete', function() {
+              expect(child.uid).to.not.equal('foo.bar');
+            });
+
+            it('should set the uid if its parent\'s UID is complete, even if its not global', function() {
+              parent.uid = 'foo';
+              expect(child.uid).to.equal('foo.bar');
+            });
           });
         });
       });
