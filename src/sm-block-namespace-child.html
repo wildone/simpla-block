@@ -4,6 +4,10 @@
   window.simpla = window.simpla || {};
   window.simpla.behaviors = window.simpla.behaviors || {};
 
+  function validUid(uid) {
+    return typeof uid !== 'undefined';
+  }
+
   /**
    * A behavior for elements that can live in namespaces.
    *
@@ -32,10 +36,7 @@
        *  should be created by the user. It must be unique to the namespace.
        * @type {String}
        */
-      sid: {
-        type: String,
-        value: ''
-      },
+      sid: String,
 
       /**
        * The current namespace it's attached to
@@ -69,7 +70,7 @@
       if (!this._namespaceListener) {
         this._namespaceListener = (event) => {
           let uid = event.detail.value;
-          if (!uid) {
+          if (!validUid(uid)) {
             this._changeUid(undefined);
           } else {
             this._changeUid(this._computeUid(uid, this.sid));
@@ -114,7 +115,7 @@
     },
 
     _updateUid(namespace, sid, isGlobal) {
-      if (!(namespace && namespace.uid) && !isGlobal) {
+      if (!(namespace && validUid(namespace.uid)) && !isGlobal) {
         this._changeUid(undefined);
       } else {
         let base,
