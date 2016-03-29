@@ -28,7 +28,7 @@
   <body>
     <test-fixture id="default">
       <template>
-        <simpla-block sid="foo" global>
+        <simpla-block gid="foo">
           <mock-namespace-child sid="bar" data-expected-uid="foo.bar"></mock-namespace-child>
 
           <simpla-block sid="baz">
@@ -42,9 +42,9 @@
           </simpla-block>
 
           <!-- Test Global Property -->
-          <simpla-block sid="baz" global>
+          <simpla-block gid="baz">
             <mock-namespace-child sid="qux" data-expected-uid="baz.qux"></mock-namespace-child>
-            <mock-namespace-child sid="bar" global data-expected-uid="bar"></mock-namespace-child>
+            <mock-namespace-child gid="bar" data-expected-uid="bar"></mock-namespace-child>
           </simpla-block>
         </simpla-block>
       </template>
@@ -52,7 +52,7 @@
 
     <test-fixture id="dynamic-uid">
       <template>
-        <simpla-block sid="foo" global>
+        <simpla-block gid="foo">
           <mock-namespace-child sid="bar"></mock-namespace-child>
           <simpla-block sid="baz">
             <mock-namespace-child sid="qux"></mock-namespace-child>
@@ -64,8 +64,8 @@
     <test-fixture id="dynamic-block">
       <template>
         <div>
-          <mock-namespace-child sid="bar" global></mock-namespace-child>
-          <simpla-block sid="baz" global>
+          <mock-namespace-child gid="bar"></mock-namespace-child>
+          <simpla-block gid="baz">
             <mock-namespace-child sid="qux"></mock-namespace-child>
           </simpla-block>
         </div>
@@ -129,8 +129,8 @@
           });
         });
 
-        describe('setting UID only once complete / global', function() {
-          it('shouldnt set the a UID if its not global and its parent\'s UID isnt complete', function() {
+        describe('setting UID only once complete', function() {
+          it('shouldnt set the a UID if it doesnt have a GID or its parent\'s UID isnt complete', function() {
             var child = fixture('namespace-child');
 
             child.sid = 'foo';
@@ -138,17 +138,15 @@
           });
 
           describe('global', function() {
-            it('should set the uid if its global', function() {
+            it('should set the uid if its got a gid', function() {
               var child = fixture('namespace-child');
 
-              child.sid = 'bar';
-              child.global = true;
-
+              child.gid = 'bar';
               expect(child.uid).to.equal('bar');
             });
           });
 
-          describe('checking for uidIsComplete', function() {
+          describe('checking for parent UID completeness', function() {
             var parent,
                 child;
 
@@ -161,7 +159,7 @@
               expect(child.uid).to.not.equal('foo.bar');
             });
 
-            it('should set the uid if its parent\'s UID is complete, even if its not global', function() {
+            it('should set the uid if its parent\'s UID is complete, even if its not a GID', function() {
               parent.uid = 'foo';
               expect(child.uid).to.equal('foo.bar');
             });
