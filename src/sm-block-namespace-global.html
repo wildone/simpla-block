@@ -5,18 +5,28 @@
 
   /**
    * A behavior for elements to make their data global
-   *
-   * TODO: Right now, this just exposes the global property, in the future it
-   * 	should add proper functionality i.e. stop pulling concatting uids from
-   * 	parents to own sid
    * @type {Object}
    */
   const blockNamespaceGlobal = {
     properties: {
-      global: {
-        type: Boolean,
-        value: false
+      gid: String
+    },
+
+    observers: [
+      '_updateUidFromGid(gid)'
+    ],
+
+    _updateUidFromGid(gid) {
+      if (gid && this.sid) {
+        console.warn(`Element cannot have both gid and sid attributes set. Using gid ('${gid}').`);
       }
+
+      if (gid && gid.indexOf('.') !== -1) {
+        console.error('A gid attribute must not contain \'.\'. This element will not save or fetch data.');
+        return;
+      }
+
+      this._changeUid(gid);
     }
   };
 

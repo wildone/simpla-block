@@ -9,12 +9,26 @@
       window.Polymer.dom = 'shadow';
     </script>
     <link rel="import" href="../simpla-block.html" />
+    <style>
+      namespace-child {
+        display: block;
+        margin: 20px 0;
+        border: solid thin red;
+        background-color: rgba(100,100,100,0.2);
+      }
+
+      simpla-block {
+        margin-left: 15px;
+        background-color: rgba(0,0,150, 0.25);
+      }
+    </style>
   </head>
   <body>
     <!-- Define mock child -->
     <dom-module id="namespace-child">
       <template>
         <p>SID: [[sid]]</p>
+        <p>GID: [[gid]]</p>
         <p>UID: [[uid]]</p>
       </template>
       <script>
@@ -24,16 +38,16 @@
         });
       </script>
     </dom-module>
-    <simpla-block sid="foo">
+    <simpla-block gid="foo">
       <namespace-child sid="bar"></namespace-child>
 
       <simpla-block sid="baz">
         <namespace-child sid="qux"></namespace-child>
         <namespace-child sid="bar"></namespace-child>
+        <namespace-child gid="bar"></namespace-child>
       </simpla-block>
 
-      <!-- Check for escaping of special characters -->
-      <simpla-block sid="baz.com">
+      <simpla-block gid="baz">
         <namespace-child sid="qux"></namespace-child>
       </simpla-block>
     </simpla-block>
