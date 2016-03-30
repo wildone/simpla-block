@@ -118,12 +118,12 @@
 
     _updateUidFromSid(namespace, sid) {
       if (this.gid) {
-        console.warn('The GID and SID attributes should not be used simultaneously, GID being used.');
+        console.warn(`Element cannot have both gid and sid attributes set. Using gid ('${this.gid}').`);
         return;
       }
 
       if (sid.indexOf('.') !== -1) {
-        console.error('SID\'s must not contain \'.\'. This element will not save or fetch data.');
+        console.error('The sid attribute must not contain \'.\'. This element will not save or fetch data.');
         return;
       }
 

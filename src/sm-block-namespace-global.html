@@ -18,11 +18,11 @@
 
     _updateUidFromGid(gid) {
       if (gid && this.sid) {
-        console.warn('The gid and sid attributes should not be used simultaneously, gid being used.');
+        console.warn(`Element cannot have both gid and sid attributes set. Using gid ('${gid}').`);
       }
 
       if (gid && gid.indexOf('.') !== -1) {
-        console.error('GID\'s must not contain \'.\'. This element will not save or fetch data.');
+        console.error('A gid attribute must not contain \'.\'. This element will not save or fetch data.');
         return;
       }
 
