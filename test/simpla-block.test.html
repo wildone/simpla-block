@@ -10,20 +10,6 @@
 
     <!-- Import the element to test -->
     <link rel="import" href="../simpla-block.html">
-
-    <!-- Define mock child -->
-    <script>
-      Polymer({
-        is: 'mock-namespace-child',
-        properties: {
-          uid: {
-            type: String,
-            value: ''
-          }
-        },
-        behaviors: [ simpla.behaviors.blockNamespaceChild ]
-      });
-    </script>
   </head>
   <body>
     <test-fixture id="default">
@@ -84,6 +70,20 @@
       describe('<simpla-block>', function() {
 
         var component;
+
+        before(function() {
+          // Define mock child
+          Polymer({
+            is: 'mock-namespace-child',
+            properties: {
+              uid: {
+                type: String,
+                value: ''
+              }
+            },
+            behaviors: [ simpla.behaviors.blockNamespaceChild ]
+          });
+        });
 
         beforeEach(function() {
           component = fixture('default');
