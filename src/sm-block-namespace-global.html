@@ -16,6 +16,19 @@
       '_updateUidFromGid(gid)'
     ],
 
+    /**
+     * Helper function to set a uid, whether it's read only or not
+     * @param  {String} uid UID to set this.uid to
+     * @return {undefined}
+     */
+    _changeUid(uid) {
+      if (this._setUid) {
+        this._setUid(uid);
+      } else {
+        this.uid = uid;
+      }
+    },
+
     _updateUidFromGid(gid) {
       if (gid && this.sid) {
         console.warn(`Element cannot have both gid and sid attributes set. Using gid ('${gid}').`);
