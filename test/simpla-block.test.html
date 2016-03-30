@@ -36,11 +36,6 @@
             <mock-namespace-child sid="bar" data-expected-uid="foo.baz.bar"></mock-namespace-child>
           </simpla-block>
 
-          <!-- Check for escaping of special characters -->
-          <simpla-block sid="baz.com">
-            <mock-namespace-child sid="qux" data-expected-uid="foo.baz\.com.qux"></mock-namespace-child>
-          </simpla-block>
-
           <!-- Test Global Property -->
           <simpla-block gid="baz">
             <mock-namespace-child sid="qux" data-expected-uid="baz.qux"></mock-namespace-child>
@@ -64,8 +59,8 @@
     <test-fixture id="dynamic-block">
       <template>
         <div>
-          <mock-namespace-child gid="bar"></mock-namespace-child>
-          <simpla-block gid="baz">
+          <mock-namespace-child sid="bar"></mock-namespace-child>
+          <simpla-block sid="baz">
             <mock-namespace-child sid="qux"></mock-namespace-child>
           </simpla-block>
         </div>
@@ -99,7 +94,7 @@
         });
 
         describe('uid composure', function() {
-          it('should compose uids as expected, including escaping', function() {
+          it('should compose uids as expected', function() {
             [].slice.call(component.querySelectorAll('mock-namespace-child'))
               .forEach(function(mock) {
                 var uid = mock.uid,
@@ -112,7 +107,7 @@
           it('should be able to change uid of a namespace and notify it\'s children', function() {
             var root = fixture('dynamic-uid');
 
-            root.sid = 'bar';
+            root.gid = 'bar';
             expect(root.querySelector('[sid="bar"]').uid).to.equal('bar.bar');
             expect(root.querySelector('[sid="qux"]').uid).to.equal('bar.baz.qux');
           });
