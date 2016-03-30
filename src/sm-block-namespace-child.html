@@ -49,7 +49,7 @@
     },
 
     observers: [
-      '_updateUid(namespace, sid, global)'
+      '_updateUidFromSid(namespace, sid)'
     ],
 
     attached() {
@@ -73,7 +73,10 @@
           if (!validUid(uid)) {
             this._changeUid(undefined);
           } else {
-            this._changeUid(this._computeUid(uid, this.sid));
+            let id = this.gid || this.sid,
+                base = this.gid ? null : uid;
+
+            this._changeUid(this._computeUid(base, id));
           }
         }
       }
@@ -110,24 +113,24 @@
      * @return {String}          Returns UID string
      */
     _computeUid(base, sid) {
-      let escaped = sid.replace('.', '\\.');
-      return base ? `${base}.${escaped}` : escaped;
+      return base ? `${base}.${sid}` : sid;
     },
 
-    _updateUid(namespace, sid, isGlobal) {
-      if (!(namespace && validUid(namespace.uid)) && !isGlobal) {
+    _updateUidFromSid(namespace, sid) {
+      if (this.gid) {
+        console.warn('The GID and SID attributes should not be used simultaneously, GID being used.');
+        return;
+      }
+
+      if (sid.indexOf('.') !== -1) {
+        console.error('SID\'s must not contain \'.\'. This element will not save or fetch data.');
+        return;
+      }
+
+      if (!(namespace && validUid(namespace.uid))) {
         this._changeUid(undefined);
       } else {
-        let base,
-            uid;
-
-        if (isGlobal) {
-          base = undefined;
-        } else {
-          base = namespace ? namespace.uid : '';
-        }
-
-        uid = this._computeUid(base, sid);
+        let uid = this._computeUid(namespace.uid, sid);
         this._changeUid(uid);
       }
     },
