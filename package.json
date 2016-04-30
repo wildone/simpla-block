@@ -1,6 +1,6 @@
 {
   "name": "simpla-block",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Namespacing element for Simpla",
   "main": "simpla-block.html",
   "scripts": {
