@@ -109,26 +109,36 @@
         }
 
         let currentNode,
-            walker = document.createTreeWalker(block, NodeFilter.SHOW_ELEMENT, {
-              acceptNode: (node) => {
-                // Children of nodes that have been accepted should be ignored,
-                //  i.e. we're assuming that they're namespaces too OR they have
-                //  no children that need to have a namespace e.g. simpla-text
-                if (node.parentElement && node.parentElement.namespace === this) {
-                  return NodeFilter.FILTER_REJECT;
-                }
+            walker,
+            filter;
 
-                if (node.joinNamespace && !node.namespace) {
-                  return NodeFilter.FILTER_ACCEPT;
-                }
+        // Filter needs to be a function for IE compatibility
+        filter = (node) => {
+          // Children of nodes that have been accepted should be ignored,
+          //  i.e. we're assuming that they're namespaces too OR they have
+          //  no children that need to have a namespace e.g. simpla-text
+          if (node.parentElement && node.parentElement.namespace === this) {
+            return NodeFilter.FILTER_REJECT;
+          }
 
-                if (node._smNamespace) {
-                  return NodeFilter.FILTER_REJECT;
-                }
+          if (node.joinNamespace && !node.namespace) {
+            return NodeFilter.FILTER_ACCEPT;
+          }
 
-                return NodeFilter.FILTER_SKIP;
-              }
-            });
+          if (node._smNamespace) {
+            return NodeFilter.FILTER_REJECT;
+          }
+
+          return NodeFilter.FILTER_SKIP;
+        };
+
+        // To be compatible with non-IE browsers, filter must have a property
+        //  called acceptNode to filter.
+        filter.acceptNode = filter;
+
+        // Note: Using deprecated entityReference (last argument) as it is needed
+        //  in IE. Other browsers don't care / won't expect it.
+        walker = document.createTreeWalker(block, NodeFilter.SHOW_ELEMENT, filter, false);
 
         // Note that nextNode is called immediately so that the root is skipped over
         while (walker.nextNode() && (currentNode = walker.currentNode)) {
