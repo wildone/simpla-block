@@ -126,6 +126,10 @@
             root.appendChild(wrapper);
 
             children.forEach(wrapper.appendChild, wrapper);
+
+            // Ensure all async DOM actions are finished
+            Polymer.dom.flush();
+
             expect(root.querySelector('[sid="bar"]').uid).to.equal('bar.bar');
             expect(root.querySelector('[sid="qux"]').uid).to.equal('bar.baz.qux');
           });
