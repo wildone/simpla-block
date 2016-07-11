@@ -3,6 +3,8 @@
 
 <dom-module id="sm-block-namespace">
   <script>
+    import makeBodyNamespace from './utils/bodyNamespace';
+
     class SmBlockNamespace {
       beforeRegister() {
         this.is = 'sm-block-namespace';
@@ -147,6 +149,10 @@
       }
     }
 
+    // Register with Polymer
     Polymer(SmBlockNamespace);
+
+    // Make sure body is a namespace
+    makeBodyNamespace();
   </script>
 </dom-module>
