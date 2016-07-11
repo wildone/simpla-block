@@ -87,6 +87,9 @@
 
         beforeEach(function() {
           component = fixture('default');
+
+          // Make sure the body is unset
+          document.body.sid = undefined;
         });
 
         it('is okay', function() {
@@ -114,11 +117,15 @@
 
           it('should be able to have a namespace added above elements and still be ok', function() {
             var root = fixture('dynamic-block'),
-                namespace = document.createElement('sm-block-namespace');
+                namespace = document.createElement('sm-block-namespace'),
+                wrapper = document.createElement('div'),
+                children = [].slice.call(root.children);
 
-            namespace.block = root;
-
+            namespace.block = wrapper;
             namespace.uid = 'bar';
+            root.appendChild(wrapper);
+
+            children.forEach(wrapper.appendChild, wrapper);
             expect(root.querySelector('[sid="bar"]').uid).to.equal('bar.bar');
             expect(root.querySelector('[sid="qux"]').uid).to.equal('bar.baz.qux');
           });
@@ -158,6 +165,14 @@
               parent.uid = 'foo';
               expect(child.uid).to.equal('foo.bar');
             });
+          });
+        });
+
+        describe('body as a namespace', function() {
+          it('should have a namespace', function() {
+            var bodyNamespace = document.body._smNamespace;
+            expect(bodyNamespace.is).to.equal('sm-block-namespace');
+            expect(bodyNamespace.block).to.equal(document.body);
           });
         });
       });
