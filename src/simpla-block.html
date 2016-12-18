@@ -6,7 +6,13 @@
 <dom-module id="simpla-block">
   <template>
     <style include="sm-css-base"></style>
+    <style>
+      .namespace {
+        display: none;
+      }
+    </style>
     <sm-block-namespace
+      class="namespace"
       uid="[[uid]]"
       block="[[self]]"
     ></sm-block-namespace>
